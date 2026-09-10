@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick survey: mathematicians and AI</title>
+<meta name="description" content="A five-minute anonymous survey for mathematicians about how they use AI.">
+<style>
+  :root {
+    --bg: #faf9f6;
+    --card: #ffffff;
+    --ink: #1c1b18;
+    --muted: #6b6860;
+    --line: #e3e0d8;
+    --accent: #2f5d8a;
+    --accent-ink: #ffffff;
+    --error: #b23a2e;
+    --ok: #2d7a4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17171a;
+      --card: #1f1f24;
+      --ink: #ecebe6;
+      --muted: #a09d94;
+      --line: #34343b;
+      --accent: #7fb0e0;
+      --accent-ink: #0f1a26;
+      --error: #e0705f;
+      --ok: #6fc28f;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.55 Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 8px; font-weight: 600; letter-spacing: -0.01em; }
+  .lede { color: var(--muted); margin: 0 0 28px; }
+  fieldset {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 10px;
+    padding: 18px 20px 14px;
+    margin: 0 0 18px;
+  }
+  legend {
+    padding: 0 6px;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  legend .n { color: var(--muted); font-weight: 400; margin-right: 6px; font-variant-numeric: tabular-nums; }
+  .hint { color: var(--muted); font-size: 0.9rem; margin: -4px 0 10px; }
+  label.opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 6px 4px; cursor: pointer; border-radius: 6px;
+  }
+  label.opt:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  label.opt input { margin-top: 5px; flex: none; accent-color: var(--accent); }
+  input[type=text], input[type=email], textarea {
+    width: 100%;
+    font: inherit;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 11px;
+  }
+  input[type=text]:focus, input[type=email]:focus, textarea:focus, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+  textarea { min-height: 84px; resize: vertical; }
+  .inline { display: inline-block; width: auto; min-width: 220px; max-width: 100%; margin-left: 6px; }
+  .sub { margin: 6px 0 4px 30px; }
+  .sub input[type=text], .sub input[type=email] { max-width: 420px; }
+  button {
+    font: inherit; font-weight: 600;
+    background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 8px; padding: 12px 22px; cursor: pointer;
+  }
+  button[disabled] { opacity: 0.6; cursor: default; }
+  .actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 26px; }
+  .status { color: var(--muted); font-size: 0.95rem; }
+  .status.err { color: var(--error); }
+  .thanks {
+    border: 1px solid var(--line); background: var(--card); border-radius: 10px;
+    padding: 28px 24px; text-align: center;
+  }
+  .thanks h2 { margin: 0 0 8px; color: var(--ok); }
+  .notice {
+    border-left: 3px solid var(--error); padding: 8px 12px; margin: 0 0 20px;
+    color: var(--muted); font-size: 0.92rem;
+  }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+  .hp { position: absolute; left: -9999px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Quick survey: mathematicians and AI</h1>
+  <p class="lede">About five minutes. Eighteen questions, all optional. Fully anonymous unless you choose to leave an email.</p>
+
+  <div id="notice" class="notice" hidden>
+    Responses aren't being collected yet: the submission endpoint hasn't been configured. Your answers will only be printed to the browser console.
+  </div>
+
+  <form id="survey" novalidate>
+
+    <fieldset>
+      <legend>Contact</legend>
+      <p class="hint">Email is for internal use only and is never published or shared.</p>
+      <label class="opt"><input type="radio" name="contact" value="anonymous" checked> Fully anonymous</label>
+      <label class="opt"><input type="radio" name="contact" value="email"> Include my email</label>
+      <div class="sub" id="emailRow" hidden>
+        <input type="email" name="email" placeholder="you@university.edu" autocomplete="email">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">1.</span>What are you?</legend>
+      <label class="opt"><input type="radio" name="q1" value="grad student"> Grad student</label>
+      <label class="opt"><input type="radio" name="q1" value="postdoc"> Postdoc</label>
+      <label class="opt"><input type="radio" name="q1" value="faculty"> Faculty</label>
+      <label class="opt"><input type="radio" name="q1" value="industry"> Industry</label>
+      <label class="opt"><input type="radio" name="q1" value="left the field"> Left the field</label>
+      <label class="opt"><input type="radio" name="q1" value="other"> Other: <input type="text" name="q1_other" class="inline" aria-label="Other, please specify"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">2.</span>Your area?</legend>
+      <input type="text" name="q2" placeholder="e.g. operator theory, PDE, number theory">
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">3.</span>Do you use AI for math? How often?</legend>
+      <label class="opt"><input type="radio" name="q3" value="never"> Never</label>
+      <label class="opt"><input type="radio" name="q3" value="occasionally"> Occasionally</label>
+      <label class="opt"><input type="radio" name="q3" value="weekly"> Weekly</label>
+      <label class="opt"><input type="radio" name="q3" value="basically every day"> Basically every day</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">4.</span>Which one(s)?</legend>
+      <p class="hint">Check all that apply.</p>
+      <label class="opt"><input type="checkbox" name="q4" value="ChatGPT"> ChatGPT</label>
+      <label class="opt"><input type="checkbox" name="q4" value="Claude"> Claude</label>
+      <label class="opt"><input type="checkbox" name="q4" value="Gemini"> Gemini</label>
+      <label class="opt"><input type="checkbox" name="q4" value="DeepSeek"> DeepSeek</label>
+      <label class="opt"><input type="checkbox" name="q4" value="Lean AI tools"> Lean AI tools</label>
+      <label class="opt"><input type="checkbox" name="q4" value="coding agents"> Coding agents</label>
+      <label class="opt"><input type="checkbox" name="q4" value="other"> Other: <input type="text" name="q4_other" class="inline" aria-label="Other, please specify"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">5.</span>What do you actually use it for?</legend>
+      <p class="hint">Check all that apply.</p>
+      <label class="opt"><input type="checkbox" name="q5" value="finding papers"> Finding papers</label>
+      <label class="opt"><input type="checkbox" name="q5" value="explaining stuff outside my area"> Explaining stuff outside my area</label>
+      <label class="opt"><input type="checkbox" name="q5" value="proof ideas"> Proof ideas</label>
+      <label class="opt"><input type="checkbox" name="q5" value="checking my proofs"> Checking my proofs</label>
+      <label class="opt"><input type="checkbox" name="q5" value="writing proofs"> Writing proofs</label>
+      <label class="opt"><input type="checkbox" name="q5" value="Lean / formalizing"> Lean / formalizing</label>
+      <label class="opt"><input type="checkbox" name="q5" value="code and computation"> Code and computation</label>
+      <label class="opt"><input type="checkbox" name="q5" value="writing papers/grants"> Writing papers/grants</label>
+      <label class="opt"><input type="checkbox" name="q5" value="teaching prep"> Teaching prep</label>
+      <label class="opt"><input type="checkbox" name="q5" value="nothing, I don't use it"> Nothing, I don't use it</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">6.</span>Has an AI ever given you a real mathematical idea you didn't have?</legend>
+      <label class="opt"><input type="radio" name="q6" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q6" value="sort of"> Sort of</label>
+      <label class="opt"><input type="radio" name="q6" value="no"> No</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">7.</span>Do you trust what it gives you?</legend>
+      <label class="opt"><input type="radio" name="q7" value="fully"> Fully</label>
+      <label class="opt"><input type="radio" name="q7" value="check the structure"> I check the structure</label>
+      <label class="opt"><input type="radio" name="q7" value="check everything"> I check everything</label>
+      <label class="opt"><input type="radio" name="q7" value="just for ideas"> Just for ideas</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">8.</span>Do you tell anyone when you use it?</legend>
+      <label class="opt"><input type="radio" name="q8" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q8" value="sometimes"> Sometimes</label>
+      <label class="opt"><input type="radio" name="q8" value="no"> No</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">9.</span>OpenAI says its model solved Navier–Stokes last week (finite-time blowup, Lean-checked, ~10,000 agents, 88 hours). First reaction?</legend>
+      <label class="opt"><input type="radio" name="q9" value="excited"> Excited</label>
+      <label class="opt"><input type="radio" name="q9" value="skeptical"> Skeptical</label>
+      <label class="opt"><input type="radio" name="q9" value="scared for my job"> Scared for my job</label>
+      <label class="opt"><input type="radio" name="q9" value="sad"> Sad</label>
+      <label class="opt"><input type="radio" name="q9" value="don't care"> Don't care</label>
+      <label class="opt"><input type="radio" name="q9" value="other"> Other: <input type="text" name="q9_other" class="inline" aria-label="Other, please specify"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">10.</span>Do you believe it?</legend>
+      <label class="opt"><input type="radio" name="q10" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q10" value="probably"> Probably</label>
+      <label class="opt"><input type="radio" name="q10" value="no idea"> No idea</label>
+      <label class="opt"><input type="radio" name="q10" value="probably not"> Probably not</label>
+      <label class="opt"><input type="radio" name="q10" value="no"> No</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">11.</span>Is a proof no human understands still math?</legend>
+      <label class="opt"><input type="radio" name="q11" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q11" value="no"> No</label>
+      <label class="opt"><input type="radio" name="q11" value="depends"> Depends: <input type="text" name="q11_other" class="inline" aria-label="Depends on what?"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">12.</span>In 5 years, what fraction of new theorems will be proved by AI?</legend>
+      <label class="opt"><input type="radio" name="q12" value="<5%"> Less than 5%</label>
+      <label class="opt"><input type="radio" name="q12" value="~25%"> About 25%</label>
+      <label class="opt"><input type="radio" name="q12" value="~50%"> About 50%</label>
+      <label class="opt"><input type="radio" name="q12" value="~75%"> About 75%</label>
+      <label class="opt"><input type="radio" name="q12" value="almost all"> Almost all</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">13.</span>Worried about your career?</legend>
+      <label class="opt"><input type="radio" name="q13" value="no"> No</label>
+      <label class="opt"><input type="radio" name="q13" value="a little"> A little</label>
+      <label class="opt"><input type="radio" name="q13" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q13" value="very"> Very</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">14.</span>Would you tell a strong undergrad to do a math PhD right now?</legend>
+      <label class="opt"><input type="radio" name="q14" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q14" value="yes but"> Yes, but: <input type="text" name="q14_other" class="inline" aria-label="Yes, but what?"></label>
+      <label class="opt"><input type="radio" name="q14" value="no"> No</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">15.</span>What's a PhD for now?</legend>
+      <textarea name="q15"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">16.</span>Does human research still matter if AI can do it better?</legend>
+      <label class="opt"><input type="radio" name="q16" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q16" value="no"> No</label>
+      <div class="sub" style="margin-left:0;margin-top:10px">
+        <label for="q16_why" class="hint" style="display:block;margin:0 0 4px">Why?</label>
+        <textarea id="q16_why" name="q16_other"></textarea>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">17.</span>If an AI could prove anything you could state, would you keep doing math?</legend>
+      <label class="opt"><input type="radio" name="q17" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="q17" value="yes but differently"> Yes, but differently</label>
+      <label class="opt"><input type="radio" name="q17" value="no"> No</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">18.</span>What should we have asked?</legend>
+      <textarea name="q18"></textarea>
+    </fieldset>
+
+    <!-- honeypot for bots; humans never see this -->
+    <div class="hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+
+    <div class="actions">
+      <button type="submit" id="submitBtn">Submit</button>
+      <span class="status" id="status"></span>
+    </div>
+  </form>
+
+  <div id="thanks" class="thanks" hidden>
+    <h2>Thanks.</h2>
+    <p>Your response has been recorded.</p>
+  </div>
+
+  <footer>Responses are stored privately. Email addresses, if given, are used only to follow up and are never shared.</footer>
+</main>
+
+<script>
+  // Paste the Google Apps Script web-app URL here once it is deployed.
+  // Leave empty while testing: submissions are logged to the console instead.
+  const ENDPOINT = "";
+
+  const form = document.getElementById("survey");
+  const statusEl = document.getElementById("status");
+  const btn = document.getElementById("submitBtn");
+  const emailRow = document.getElementById("emailRow");
+  const emailInput = form.elements["email"];
+
+  if (!ENDPOINT) document.getElementById("notice").hidden = false;
+
+  // Show the email box only when "Include my email" is selected.
+  form.querySelectorAll('input[name="contact"]').forEach(r => {
+    r.addEventListener("change", () => {
+      const wantsEmail = form.elements["contact"].value === "email";
+      emailRow.hidden = !wantsEmail;
+      if (wantsEmail) emailInput.focus();
+    });
+  });
+
+  // Typing in an "Other:" box selects its radio/checkbox automatically.
+  form.querySelectorAll("input.inline").forEach(t => {
+    t.addEventListener("input", () => {
+      const ctl = t.closest("label")?.querySelector('input[type=radio],input[type=checkbox]');
+      if (ctl && t.value.trim()) ctl.checked = true;
+    });
+  });
+
+  function collect() {
+    const data = { submitted_at: new Date().toISOString(), user_agent: navigator.userAgent };
+    const fd = new FormData(form);
+    const multi = new Set(["q4", "q5"]);
+    for (const [k, v] of fd.entries()) {
+      if (multi.has(k)) { (data[k] = data[k] || []).push(v); }
+      else data[k] = typeof v === "string" ? v.trim() : v;
+    }
+    for (const k of multi) data[k] = (data[k] || []).join("; ");
+    if (data.contact !== "email") data.email = "";
+    return data;
+  }
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    statusEl.className = "status";
+    const data = collect();
+
+    if (data.website) { form.reset(); return; } // honeypot tripped: silently drop
+
+    if (data.contact === "email" && data.email && !emailInput.checkValidity()) {
+      statusEl.textContent = "That email address doesn't look right.";
+      statusEl.className = "status err";
+      emailInput.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    statusEl.textContent = "Sending…";
+
+    try {
+      if (!ENDPOINT) {
+        console.log("Survey response (endpoint not configured):", data);
+        await new Promise(r => setTimeout(r, 400));
+      } else {
+        // text/plain keeps this a "simple" request, so no CORS preflight
+        // hits the Apps Script redirect.
+        const res = await fetch(ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(data)
+        });
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.ok === false) throw new Error(out.error || ("HTTP " + res.status));
+      }
+      form.hidden = true;
+      document.getElementById("thanks").hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Couldn't send. Please check your connection and try again.";
+      statusEl.className = "status err";
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
