@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quick survey: mathematicians and AI</title>
-<meta name="description" content="A five-minute anonymous survey for mathematicians about how they use AI.">
+<meta name="description" content="A short anonymous survey for mathematicians about how they use and think about AI.">
 <style>
   :root {
     --bg: #faf9f6;
@@ -40,7 +40,13 @@
   }
   main { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
   h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 8px; font-weight: 600; letter-spacing: -0.01em; }
-  .lede { color: var(--muted); margin: 0 0 28px; }
+  h2.section {
+    font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin: 34px 0 12px;
+  }
+  .intro p { margin: 0 0 12px; }
+  .intro .lede { color: var(--muted); }
+  a { color: var(--accent); }
   fieldset {
     border: 1px solid var(--line);
     background: var(--card);
@@ -48,11 +54,7 @@
     padding: 18px 20px 14px;
     margin: 0 0 18px;
   }
-  legend {
-    padding: 0 6px;
-    font-weight: 600;
-    font-size: 1rem;
-  }
+  legend { padding: 0 6px; font-weight: 600; font-size: 1rem; }
   legend .n { color: var(--muted); font-weight: 400; margin-right: 6px; font-variant-numeric: tabular-nums; }
   .hint { color: var(--muted); font-size: 0.9rem; margin: -4px 0 10px; }
   label.opt {
@@ -61,7 +63,7 @@
   }
   label.opt:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
   label.opt input { margin-top: 5px; flex: none; accent-color: var(--accent); }
-  input[type=text], input[type=email], textarea {
+  input[type=text], input[type=email], textarea, select {
     width: 100%;
     font: inherit;
     color: var(--ink);
@@ -70,13 +72,15 @@
     border-radius: 6px;
     padding: 9px 11px;
   }
-  input[type=text]:focus, input[type=email]:focus, textarea:focus, button:focus-visible {
+  select { max-width: 420px; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
     outline: 2px solid var(--accent); outline-offset: 1px;
   }
   textarea { min-height: 84px; resize: vertical; }
   .inline { display: inline-block; width: auto; min-width: 220px; max-width: 100%; margin-left: 6px; }
   .sub { margin: 6px 0 4px 30px; }
-  .sub input[type=text], .sub input[type=email] { max-width: 420px; }
+  .sub input[type=email] { max-width: 420px; }
+  .sub label.opt { padding: 4px; }
   button {
     font: inherit; font-weight: 600;
     background: var(--accent); color: var(--accent-ink);
@@ -86,11 +90,12 @@
   .actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 26px; }
   .status { color: var(--muted); font-size: 0.95rem; }
   .status.err { color: var(--error); }
-  .thanks {
+  .thanks, .already {
     border: 1px solid var(--line); background: var(--card); border-radius: 10px;
     padding: 28px 24px; text-align: center;
   }
   .thanks h2 { margin: 0 0 8px; color: var(--ok); }
+  .already p { margin: 0 0 10px; }
   .notice {
     border-left: 3px solid var(--error); padding: 8px 12px; margin: 0 0 20px;
     color: var(--muted); font-size: 0.92rem;
@@ -102,171 +107,269 @@
 <body>
 <main>
   <h1>Quick survey: mathematicians and AI</h1>
-  <p class="lede">About five minutes. Eighteen questions, all optional. Fully anonymous unless you choose to leave an email.</p>
+
+  <div class="intro">
+    <p class="lede">About five to seven minutes. Every question is optional.</p>
+    <p>I'm Nic Berkopec. I'm collecting a snapshot of how people in our department use, and think about, AI for mathematics. I'll share the aggregate results with the department once the survey closes<span id="closeDate"></span>.</p>
+    <p class="lede">Responses are anonymous unless you choose to leave an email. Raw responses are seen only by me and are reported only in aggregate.</p>
+  </div>
 
   <div id="notice" class="notice" hidden>
     Responses aren't being collected yet: the submission endpoint hasn't been configured. Your answers will only be printed to the browser console.
   </div>
 
+  <div id="already" class="already" hidden>
+    <p>It looks like you've already responded from this browser. Thank you.</p>
+    <p><a href="#" id="respondAgain">Respond again anyway</a></p>
+  </div>
+
   <form id="survey" novalidate>
 
     <fieldset>
-      <legend>Contact</legend>
-      <p class="hint">Email is for internal use only and is never published or shared.</p>
+      <legend>Contact (optional)</legend>
       <label class="opt"><input type="radio" name="contact" value="anonymous" checked> Fully anonymous</label>
       <label class="opt"><input type="radio" name="contact" value="email"> Include my email</label>
       <div class="sub" id="emailRow" hidden>
-        <input type="email" name="email" placeholder="you@university.edu" autocomplete="email">
+        <input type="email" name="email" placeholder="you@wustl.edu" autocomplete="email">
+        <label class="opt"><input type="checkbox" name="email_results" value="yes"> Send me the results</label>
+        <label class="opt"><input type="checkbox" name="email_chat" value="yes"> I'd be willing to chat more about this</label>
       </div>
+      <label class="opt" style="margin-top:8px"><input type="checkbox" name="quote_ok" value="yes"> It's OK to quote my written answers anonymously</label>
     </fieldset>
+
+    <h2 class="section">About you</h2>
 
     <fieldset>
       <legend><span class="n">1.</span>What are you?</legend>
-      <label class="opt"><input type="radio" name="q1" value="grad student"> Grad student</label>
-      <label class="opt"><input type="radio" name="q1" value="postdoc"> Postdoc</label>
-      <label class="opt"><input type="radio" name="q1" value="faculty"> Faculty</label>
-      <label class="opt"><input type="radio" name="q1" value="industry"> Industry</label>
-      <label class="opt"><input type="radio" name="q1" value="left the field"> Left the field</label>
-      <label class="opt"><input type="radio" name="q1" value="other"> Other: <input type="text" name="q1_other" class="inline" aria-label="Other, please specify"></label>
+      <label class="opt"><input type="radio" name="role" value="undergraduate"> Undergraduate</label>
+      <label class="opt"><input type="radio" name="role" value="grad student"> Grad student</label>
+      <label class="opt"><input type="radio" name="role" value="postdoc"> Postdoc</label>
+      <label class="opt"><input type="radio" name="role" value="faculty"> Faculty</label>
+      <label class="opt"><input type="radio" name="role" value="industry"> Industry</label>
+      <label class="opt"><input type="radio" name="role" value="left the field"> Left the field</label>
+      <label class="opt"><input type="radio" name="role" value="other"> Other: <input type="text" name="role_other" class="inline" aria-label="Other, please specify"></label>
     </fieldset>
 
     <fieldset>
       <legend><span class="n">2.</span>Your area?</legend>
-      <input type="text" name="q2" placeholder="e.g. operator theory, PDE, number theory">
+      <p class="hint">Deliberately broad, so nobody is identifiable.</p>
+      <select name="area">
+        <option value="">Choose one…</option>
+        <option>Algebra</option>
+        <option>Analysis</option>
+        <option>Geometry and topology</option>
+        <option>PDE and applied</option>
+        <option>Probability and statistics</option>
+        <option>Logic and foundations</option>
+        <option>Combinatorics and number theory</option>
+        <option>Other</option>
+      </select>
     </fieldset>
+
+    <h2 class="section">How you use it</h2>
 
     <fieldset>
       <legend><span class="n">3.</span>Do you use AI for math? How often?</legend>
-      <label class="opt"><input type="radio" name="q3" value="never"> Never</label>
-      <label class="opt"><input type="radio" name="q3" value="occasionally"> Occasionally</label>
-      <label class="opt"><input type="radio" name="q3" value="weekly"> Weekly</label>
-      <label class="opt"><input type="radio" name="q3" value="basically every day"> Basically every day</label>
+      <label class="opt"><input type="radio" name="frequency" value="never"> Never</label>
+      <label class="opt"><input type="radio" name="frequency" value="occasionally"> Occasionally</label>
+      <label class="opt"><input type="radio" name="frequency" value="weekly"> Weekly</label>
+      <label class="opt"><input type="radio" name="frequency" value="basically every day"> Basically every day</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">4.</span>Which one(s)?</legend>
+      <legend><span class="n">4.</span>Roughly how many hours a week?</legend>
+      <label class="opt"><input type="radio" name="hours" value="0"> None</label>
+      <label class="opt"><input type="radio" name="hours" value="<1"> Under an hour</label>
+      <label class="opt"><input type="radio" name="hours" value="1-5"> 1 to 5</label>
+      <label class="opt"><input type="radio" name="hours" value="5-15"> 5 to 15</label>
+      <label class="opt"><input type="radio" name="hours" value="15+"> More than 15</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">5.</span>Which one(s)?</legend>
       <p class="hint">Check all that apply.</p>
-      <label class="opt"><input type="checkbox" name="q4" value="ChatGPT"> ChatGPT</label>
-      <label class="opt"><input type="checkbox" name="q4" value="Claude"> Claude</label>
-      <label class="opt"><input type="checkbox" name="q4" value="Gemini"> Gemini</label>
-      <label class="opt"><input type="checkbox" name="q4" value="DeepSeek"> DeepSeek</label>
-      <label class="opt"><input type="checkbox" name="q4" value="Lean AI tools"> Lean AI tools</label>
-      <label class="opt"><input type="checkbox" name="q4" value="coding agents"> Coding agents</label>
-      <label class="opt"><input type="checkbox" name="q4" value="other"> Other: <input type="text" name="q4_other" class="inline" aria-label="Other, please specify"></label>
+      <label class="opt"><input type="checkbox" name="tools" value="ChatGPT"> ChatGPT</label>
+      <label class="opt"><input type="checkbox" name="tools" value="Claude"> Claude</label>
+      <label class="opt"><input type="checkbox" name="tools" value="Gemini"> Gemini</label>
+      <label class="opt"><input type="checkbox" name="tools" value="DeepSeek"> DeepSeek</label>
+      <label class="opt"><input type="checkbox" name="tools" value="Lean AI tools"> Lean AI tools</label>
+      <label class="opt"><input type="checkbox" name="tools" value="coding agents"> Coding agents</label>
+      <label class="opt"><input type="checkbox" name="tools" value="other"> Other: <input type="text" name="tools_other" class="inline" aria-label="Other, please specify"></label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">5.</span>What do you actually use it for?</legend>
+      <legend><span class="n">6.</span>What do you actually use it for?</legend>
       <p class="hint">Check all that apply.</p>
-      <label class="opt"><input type="checkbox" name="q5" value="finding papers"> Finding papers</label>
-      <label class="opt"><input type="checkbox" name="q5" value="explaining stuff outside my area"> Explaining stuff outside my area</label>
-      <label class="opt"><input type="checkbox" name="q5" value="proof ideas"> Proof ideas</label>
-      <label class="opt"><input type="checkbox" name="q5" value="checking my proofs"> Checking my proofs</label>
-      <label class="opt"><input type="checkbox" name="q5" value="writing proofs"> Writing proofs</label>
-      <label class="opt"><input type="checkbox" name="q5" value="Lean / formalizing"> Lean / formalizing</label>
-      <label class="opt"><input type="checkbox" name="q5" value="code and computation"> Code and computation</label>
-      <label class="opt"><input type="checkbox" name="q5" value="writing papers/grants"> Writing papers/grants</label>
-      <label class="opt"><input type="checkbox" name="q5" value="teaching prep"> Teaching prep</label>
-      <label class="opt"><input type="checkbox" name="q5" value="nothing, I don't use it"> Nothing, I don't use it</label>
+      <label class="opt"><input type="checkbox" name="uses" value="finding papers"> Finding papers</label>
+      <label class="opt"><input type="checkbox" name="uses" value="explaining stuff outside my area"> Explaining stuff outside my area</label>
+      <label class="opt"><input type="checkbox" name="uses" value="proof ideas"> Proof ideas</label>
+      <label class="opt"><input type="checkbox" name="uses" value="checking my proofs"> Checking my proofs</label>
+      <label class="opt"><input type="checkbox" name="uses" value="writing proofs"> Writing proofs</label>
+      <label class="opt"><input type="checkbox" name="uses" value="Lean / formalizing"> Lean / formalizing</label>
+      <label class="opt"><input type="checkbox" name="uses" value="code and computation"> Code and computation</label>
+      <label class="opt"><input type="checkbox" name="uses" value="writing papers/grants"> Writing papers/grants</label>
+      <label class="opt"><input type="checkbox" name="uses" value="teaching prep"> Teaching prep</label>
+      <label class="opt"><input type="checkbox" name="uses" value="nothing, I don't use it"> Nothing, I don't use it</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">6.</span>Has an AI ever given you a real mathematical idea you didn't have?</legend>
-      <label class="opt"><input type="radio" name="q6" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q6" value="sort of"> Sort of</label>
-      <label class="opt"><input type="radio" name="q6" value="no"> No</label>
+      <legend><span class="n">7.</span>Has an AI ever given you a real mathematical idea you didn't have?</legend>
+      <label class="opt"><input type="radio" name="real_idea" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="real_idea" value="sort of"> Sort of</label>
+      <label class="opt"><input type="radio" name="real_idea" value="no"> No</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">7.</span>Do you trust what it gives you?</legend>
-      <label class="opt"><input type="radio" name="q7" value="fully"> Fully</label>
-      <label class="opt"><input type="radio" name="q7" value="check the structure"> I check the structure</label>
-      <label class="opt"><input type="radio" name="q7" value="check everything"> I check everything</label>
-      <label class="opt"><input type="radio" name="q7" value="just for ideas"> Just for ideas</label>
+      <legend><span class="n">8.</span>Do you trust what it gives you?</legend>
+      <label class="opt"><input type="radio" name="trust" value="fully"> Fully</label>
+      <label class="opt"><input type="radio" name="trust" value="check the structure"> I check the structure</label>
+      <label class="opt"><input type="radio" name="trust" value="check everything"> I check everything</label>
+      <label class="opt"><input type="radio" name="trust" value="just for ideas"> Just for ideas</label>
+      <label class="opt"><input type="radio" name="trust" value="n/a"> N/A, I don't use it</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">8.</span>Do you tell anyone when you use it?</legend>
-      <label class="opt"><input type="radio" name="q8" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q8" value="sometimes"> Sometimes</label>
-      <label class="opt"><input type="radio" name="q8" value="no"> No</label>
+      <legend><span class="n">9.</span>Do you tell anyone when you use it?</legend>
+      <label class="opt"><input type="radio" name="disclose" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="disclose" value="sometimes"> Sometimes</label>
+      <label class="opt"><input type="radio" name="disclose" value="no"> No</label>
+      <label class="opt"><input type="radio" name="disclose" value="n/a"> N/A, I don't use it</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">9.</span>OpenAI says its model solved Navier–Stokes last week (finite-time blowup, Lean-checked, ~10,000 agents, 88 hours). First reaction?</legend>
-      <label class="opt"><input type="radio" name="q9" value="excited"> Excited</label>
-      <label class="opt"><input type="radio" name="q9" value="skeptical"> Skeptical</label>
-      <label class="opt"><input type="radio" name="q9" value="scared for my job"> Scared for my job</label>
-      <label class="opt"><input type="radio" name="q9" value="sad"> Sad</label>
-      <label class="opt"><input type="radio" name="q9" value="don't care"> Don't care</label>
-      <label class="opt"><input type="radio" name="q9" value="other"> Other: <input type="text" name="q9_other" class="inline" aria-label="Other, please specify"></label>
+      <legend><span class="n">10.</span>Have you caught an AI in a serious mathematical mistake? A wrong proof, an invented reference.</legend>
+      <label class="opt"><input type="radio" name="caught_error" value="yes, often"> Yes, often</label>
+      <label class="opt"><input type="radio" name="caught_error" value="yes, occasionally"> Yes, occasionally</label>
+      <label class="opt"><input type="radio" name="caught_error" value="no"> No</label>
+      <label class="opt"><input type="radio" name="caught_error" value="n/a"> N/A, I don't use it</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">10.</span>Do you believe it?</legend>
-      <label class="opt"><input type="radio" name="q10" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q10" value="probably"> Probably</label>
-      <label class="opt"><input type="radio" name="q10" value="no idea"> No idea</label>
-      <label class="opt"><input type="radio" name="q10" value="probably not"> Probably not</label>
-      <label class="opt"><input type="radio" name="q10" value="no"> No</label>
+      <legend><span class="n">11.</span>Have you refereed or read a paper you suspected was AI-written?</legend>
+      <label class="opt"><input type="radio" name="refereeing" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="refereeing" value="maybe"> Maybe</label>
+      <label class="opt"><input type="radio" name="refereeing" value="no"> No</label>
+      <label class="opt"><input type="radio" name="refereeing" value="don't referee"> I don't referee</label>
+    </fieldset>
+
+    <h2 class="section">The big picture</h2>
+
+    <fieldset>
+      <legend><span class="n">12.</span>On September 8, 2026, <a href="https://openai.com/index/navier-stokes-solution/" target="_blank" rel="noopener">OpenAI announced</a> that its model solved Navier–Stokes (finite-time blowup, Lean-checked, ~10,000 agents, 88 hours). First reaction?</legend>
+      <p class="hint">Pick up to two.</p>
+      <label class="opt"><input type="checkbox" name="ns_reaction" value="excited"> Excited</label>
+      <label class="opt"><input type="checkbox" name="ns_reaction" value="skeptical"> Skeptical</label>
+      <label class="opt"><input type="checkbox" name="ns_reaction" value="scared for my job"> Scared for my job</label>
+      <label class="opt"><input type="checkbox" name="ns_reaction" value="sad"> Sad</label>
+      <label class="opt"><input type="checkbox" name="ns_reaction" value="don't care"> Don't care</label>
+      <label class="opt"><input type="checkbox" name="ns_reaction" value="other"> Other: <input type="text" name="ns_reaction_other" class="inline" aria-label="Other, please specify"></label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">11.</span>Is a proof no human understands still math?</legend>
-      <label class="opt"><input type="radio" name="q11" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q11" value="no"> No</label>
-      <label class="opt"><input type="radio" name="q11" value="depends"> Depends: <input type="text" name="q11_other" class="inline" aria-label="Depends on what?"></label>
+      <legend><span class="n">13.</span>Do you believe it?</legend>
+      <label class="opt"><input type="radio" name="believe" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="believe" value="probably"> Probably</label>
+      <label class="opt"><input type="radio" name="believe" value="no idea"> No idea</label>
+      <label class="opt"><input type="radio" name="believe" value="probably not"> Probably not</label>
+      <label class="opt"><input type="radio" name="believe" value="no"> No</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">12.</span>In 5 years, what fraction of new theorems will be proved by AI?</legend>
-      <label class="opt"><input type="radio" name="q12" value="<5%"> Less than 5%</label>
-      <label class="opt"><input type="radio" name="q12" value="~25%"> About 25%</label>
-      <label class="opt"><input type="radio" name="q12" value="~50%"> About 50%</label>
-      <label class="opt"><input type="radio" name="q12" value="~75%"> About 75%</label>
-      <label class="opt"><input type="radio" name="q12" value="almost all"> Almost all</label>
+      <legend><span class="n">14.</span>Is a proof no human understands still math?</legend>
+      <label class="opt"><input type="radio" name="proof_no_human" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="proof_no_human" value="no"> No</label>
+      <label class="opt"><input type="radio" name="proof_no_human" value="depends"> Depends: <input type="text" name="proof_no_human_other" class="inline" aria-label="Depends on what?"></label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">13.</span>Worried about your career?</legend>
-      <label class="opt"><input type="radio" name="q13" value="no"> No</label>
-      <label class="opt"><input type="radio" name="q13" value="a little"> A little</label>
-      <label class="opt"><input type="radio" name="q13" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q13" value="very"> Very</label>
+      <legend><span class="n">15.</span>In 5 years, what fraction of new theorems will be proved by AI?</legend>
+      <label class="opt"><input type="radio" name="fraction_5y" value="<5%"> Less than 5%</label>
+      <label class="opt"><input type="radio" name="fraction_5y" value="~25%"> About 25%</label>
+      <label class="opt"><input type="radio" name="fraction_5y" value="~50%"> About 50%</label>
+      <label class="opt"><input type="radio" name="fraction_5y" value="~75%"> About 75%</label>
+      <label class="opt"><input type="radio" name="fraction_5y" value="almost all"> Almost all</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">14.</span>Would you tell a strong undergrad to do a math PhD right now?</legend>
-      <label class="opt"><input type="radio" name="q14" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q14" value="yes but"> Yes, but: <input type="text" name="q14_other" class="inline" aria-label="Yes, but what?"></label>
-      <label class="opt"><input type="radio" name="q14" value="no"> No</label>
+      <legend><span class="n">16.</span>Worried about your career?</legend>
+      <label class="opt"><input type="radio" name="career_worry" value="no"> No</label>
+      <label class="opt"><input type="radio" name="career_worry" value="a little"> A little</label>
+      <label class="opt"><input type="radio" name="career_worry" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="career_worry" value="very"> Very</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">15.</span>What's a PhD for now?</legend>
-      <textarea name="q15"></textarea>
+      <legend><span class="n">17.</span>Would you tell a strong undergrad to do a math PhD right now?</legend>
+      <label class="opt"><input type="radio" name="advise_phd" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="advise_phd" value="yes but"> Yes, but: <input type="text" name="advise_phd_other" class="inline" aria-label="Yes, but what?"></label>
+      <label class="opt"><input type="radio" name="advise_phd" value="no"> No</label>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">16.</span>Does human research still matter if AI can do it better?</legend>
-      <label class="opt"><input type="radio" name="q16" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q16" value="no"> No</label>
-      <div class="sub" style="margin-left:0;margin-top:10px">
-        <label for="q16_why" class="hint" style="display:block;margin:0 0 4px">Why?</label>
-        <textarea id="q16_why" name="q16_other"></textarea>
-      </div>
+      <legend><span class="n">18.</span>What's a PhD for now?</legend>
+      <textarea name="phd_for"></textarea>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">17.</span>If an AI could prove anything you could state, would you keep doing math?</legend>
-      <label class="opt"><input type="radio" name="q17" value="yes"> Yes</label>
-      <label class="opt"><input type="radio" name="q17" value="yes but differently"> Yes, but differently</label>
-      <label class="opt"><input type="radio" name="q17" value="no"> No</label>
+      <legend><span class="n">19.</span>Does human research still matter if AI can do it better? Why or why not?</legend>
+      <textarea name="human_research_why"></textarea>
     </fieldset>
 
     <fieldset>
-      <legend><span class="n">18.</span>What should we have asked?</legend>
-      <textarea name="q18"></textarea>
+      <legend><span class="n">20.</span>If an AI could prove anything you could state, would you keep doing math?</legend>
+      <label class="opt"><input type="radio" name="keep_doing" value="yes"> Yes</label>
+      <label class="opt"><input type="radio" name="keep_doing" value="yes but differently"> Yes, but differently</label>
+      <label class="opt"><input type="radio" name="keep_doing" value="no"> No</label>
+    </fieldset>
+
+    <h2 class="section">The department</h2>
+
+    <fieldset>
+      <legend><span class="n">21.</span>Do your students use AI in your courses?</legend>
+      <label class="opt"><input type="radio" name="students_use" value="widely"> Yes, widely</label>
+      <label class="opt"><input type="radio" name="students_use" value="some"> Some do</label>
+      <label class="opt"><input type="radio" name="students_use" value="rarely"> Rarely</label>
+      <label class="opt"><input type="radio" name="students_use" value="don't know"> I don't know</label>
+      <label class="opt"><input type="radio" name="students_use" value="don't teach"> I don't teach</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">22.</span>Do you have an AI policy in your courses?</legend>
+      <label class="opt"><input type="radio" name="course_policy" value="allowed with disclosure"> Yes, allowed with disclosure</label>
+      <label class="opt"><input type="radio" name="course_policy" value="not allowed"> Yes, not allowed</label>
+      <label class="opt"><input type="radio" name="course_policy" value="no policy"> No policy</label>
+      <label class="opt"><input type="radio" name="course_policy" value="don't teach"> I don't teach</label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">23.</span>Should the department do anything about this?</legend>
+      <p class="hint">Check all that apply.</p>
+      <label class="opt"><input type="checkbox" name="dept_should" value="workshop or seminar"> Run a workshop or seminar</label>
+      <label class="opt"><input type="checkbox" name="dept_should" value="shared subscription"> Provide a shared subscription</label>
+      <label class="opt"><input type="checkbox" name="dept_should" value="guidelines for research use"> Write guidelines for research use</label>
+      <label class="opt"><input type="checkbox" name="dept_should" value="shared policy for courses"> Adopt a shared policy for courses</label>
+      <label class="opt"><input type="checkbox" name="dept_should" value="nothing"> Nothing</label>
+      <label class="opt"><input type="checkbox" name="dept_should" value="other"> Other: <input type="text" name="dept_should_other" class="inline" aria-label="Other, please specify"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">24.</span>Do you pay for an AI subscription?</legend>
+      <label class="opt"><input type="radio" name="pays" value="out of pocket"> Yes, out of pocket</label>
+      <label class="opt"><input type="radio" name="pays" value="grant or department"> A grant or the department pays</label>
+      <label class="opt"><input type="radio" name="pays" value="free tier only"> Free tier only</label>
+      <label class="opt"><input type="radio" name="pays" value="don't use one"> I don't use one</label>
+    </fieldset>
+
+    <h2 class="section">Last things</h2>
+
+    <fieldset>
+      <legend><span class="n">25.</span>What should we have asked?</legend>
+      <textarea name="should_have_asked"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend><span class="n">26.</span>Anything else?</legend>
+      <textarea name="anything_else"></textarea>
     </fieldset>
 
     <!-- honeypot for bots; humans never see this -->
@@ -280,10 +383,10 @@
 
   <div id="thanks" class="thanks" hidden>
     <h2>Thanks.</h2>
-    <p>Your response has been recorded.</p>
+    <p>Your response has been recorded. Aggregate results will be shared with the department once the survey closes.</p>
   </div>
 
-  <footer>Responses are stored privately. Email addresses, if given, are used only to follow up and are never shared.</footer>
+  <footer>Responses are stored privately and reported only in aggregate. Email addresses, if given, are used only for what you ticked above and are never shared.</footer>
 </main>
 
 <script>
@@ -291,13 +394,31 @@
   // Leave empty while testing: submissions are logged to the console instead.
   const ENDPOINT = "";
 
+  // Optional closing date shown in the intro, e.g. "October 1". Leave empty to omit.
+  const CLOSE_DATE = "";
+
+  const SUBMITTED_KEY = "mathai-survey-submitted";
+  const MULTI = ["tools", "uses", "ns_reaction", "dept_should"];
+
   const form = document.getElementById("survey");
   const statusEl = document.getElementById("status");
   const btn = document.getElementById("submitBtn");
   const emailRow = document.getElementById("emailRow");
   const emailInput = form.elements["email"];
+  const already = document.getElementById("already");
 
   if (!ENDPOINT) document.getElementById("notice").hidden = false;
+  if (CLOSE_DATE) document.getElementById("closeDate").textContent = " on " + CLOSE_DATE;
+
+  // Soft duplicate guard.
+  let seen = false;
+  try { seen = localStorage.getItem(SUBMITTED_KEY) === "1"; } catch (_) {}
+  if (seen) { already.hidden = false; form.hidden = true; }
+  document.getElementById("respondAgain").addEventListener("click", (ev) => {
+    ev.preventDefault();
+    already.hidden = true;
+    form.hidden = false;
+  });
 
   // Show the email box only when "Include my email" is selected.
   form.querySelectorAll('input[name="contact"]').forEach(r => {
@@ -312,20 +433,27 @@
   form.querySelectorAll("input.inline").forEach(t => {
     t.addEventListener("input", () => {
       const ctl = t.closest("label")?.querySelector('input[type=radio],input[type=checkbox]');
-      if (ctl && t.value.trim()) ctl.checked = true;
+      if (ctl && t.value.trim()) { ctl.checked = true; ctl.dispatchEvent(new Event("change", { bubbles: true })); }
+    });
+  });
+
+  // "Pick up to two" for the Navier–Stokes reaction.
+  form.querySelectorAll('input[name="ns_reaction"]').forEach(cb => {
+    cb.addEventListener("change", () => {
+      const checked = [...form.querySelectorAll('input[name="ns_reaction"]:checked')];
+      if (checked.length > 2) cb.checked = false;
     });
   });
 
   function collect() {
-    const data = { submitted_at: new Date().toISOString(), user_agent: navigator.userAgent };
+    const data = { submitted_at: new Date().toISOString() };
     const fd = new FormData(form);
-    const multi = new Set(["q4", "q5"]);
     for (const [k, v] of fd.entries()) {
-      if (multi.has(k)) { (data[k] = data[k] || []).push(v); }
+      if (MULTI.includes(k)) { (data[k] = data[k] || []).push(v); }
       else data[k] = typeof v === "string" ? v.trim() : v;
     }
-    for (const k of multi) data[k] = (data[k] || []).join("; ");
-    if (data.contact !== "email") data.email = "";
+    for (const k of MULTI) data[k] = (data[k] || []).join("; ");
+    if (data.contact !== "email") { data.email = ""; data.email_results = ""; data.email_chat = ""; }
     return data;
   }
 
@@ -361,6 +489,7 @@
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.ok === false) throw new Error(out.error || ("HTTP " + res.status));
       }
+      try { localStorage.setItem(SUBMITTED_KEY, "1"); } catch (_) {}
       form.hidden = true;
       document.getElementById("thanks").hidden = false;
       window.scrollTo({ top: 0, behavior: "smooth" });

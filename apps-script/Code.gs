@@ -17,11 +17,15 @@
 var SHEET_NAME = "Responses";
 
 var COLUMNS = [
-  "submitted_at", "contact", "email",
-  "q1", "q1_other", "q2", "q3", "q4", "q4_other", "q5",
-  "q6", "q7", "q8", "q9", "q9_other", "q10", "q11", "q11_other",
-  "q12", "q13", "q14", "q14_other", "q15", "q16", "q16_other",
-  "q17", "q18", "user_agent"
+  "submitted_at", "contact", "email", "email_results", "email_chat", "quote_ok",
+  "role", "role_other", "area",
+  "frequency", "hours", "tools", "tools_other", "uses",
+  "real_idea", "trust", "disclose", "caught_error", "refereeing",
+  "ns_reaction", "ns_reaction_other", "believe", "proof_no_human", "proof_no_human_other",
+  "fraction_5y", "career_worry", "advise_phd", "advise_phd_other", "phd_for",
+  "human_research_why", "keep_doing",
+  "students_use", "course_policy", "dept_should", "dept_should_other", "pays",
+  "should_have_asked", "anything_else"
 ];
 
 function doPost(e) {

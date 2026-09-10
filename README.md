@@ -1,6 +1,6 @@
 # Mathematicians and AI: quick survey
 
-A single-page, five-minute survey hosted on GitHub Pages. Responses are posted to a
+A single-page survey (26 questions, five to seven minutes) hosted on GitHub Pages. Responses are posted to a
 Google Apps Script web app that appends them as rows in a private Google Sheet.
 
 - `index.html` — the survey (no build step, no dependencies)
@@ -12,6 +12,8 @@ Google Apps Script web app that appends them as rows in a private Google Sheet.
 2. Extensions → Apps Script. Replace the default code with `apps-script/Code.gs`. Save.
 3. Deploy → New deployment → Web app. Execute as **Me**; who has access **Anyone**. Deploy and authorise.
 4. Copy the Web app URL (ends in `/exec`) into `ENDPOINT` near the bottom of `index.html`. Commit and push.
+
+Optionally set `CLOSE_DATE` next to it to show a closing date in the intro.
 
 Until `ENDPOINT` is set, the page shows a notice and logs submissions to the browser console.
 
