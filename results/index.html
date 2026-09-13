@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathematicians and AI: results</title>
+<meta name="description" content="Live aggregate results from a departmental survey of mathematicians about AI.">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --line: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;
+    --link: #1c5cab;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --line: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --link: #86b6ef;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 1.8rem; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--ink-2); margin: 0 0 6px; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 28px; }
+  a { color: var(--link); }
+  h2 { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 36px 0 12px; }
+  .q {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px 12px; margin: 0 0 14px;
+  }
+  .q h3 { font-size: 1rem; font-weight: 600; margin: 0 0 10px; line-height: 1.35; }
+  .q h3 .n { color: var(--muted); font-weight: 400; margin-right: 6px; }
+  .q .note { color: var(--muted); font-size: 0.82rem; margin: -6px 0 10px; }
+  table.bars { width: 100%; border-collapse: collapse; }
+  table.bars td { padding: 3px 0; vertical-align: middle; font-size: 0.92rem; }
+  td.lbl { width: 38%; color: var(--ink-2); padding-right: 10px; }
+  td.bar { width: 50%; }
+  td.val { width: 12%; text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 10px; }
+  .track { position: relative; height: 14px; background: transparent; border-left: 1px solid var(--grid); }
+  .fill {
+    position: absolute; left: 0; top: 0; height: 14px; background: var(--series-1);
+    border-radius: 0 4px 4px 0; min-width: 0; transition: width 300ms ease;
+  }
+  tr:hover .fill { filter: brightness(1.12); }
+  tr:hover td.lbl, tr:hover td.val { color: var(--ink); }
+  .empty { color: var(--muted); font-size: 0.9rem; }
+  .quote { border-left: 3px solid var(--series-1); padding: 4px 14px; margin: 10px 0; }
+  .quote p { margin: 0; white-space: pre-wrap; }
+  .quote .who { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+  .status { padding: 24px; text-align: center; color: var(--muted); }
+  .status.err { color: #d03b3b; }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 44px; }
+  @media print { .fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mathematicians and AI: results</h1>
+  <p class="sub">Aggregate responses to a departmental survey run by Nic Berkopec.</p>
+  <p class="meta" id="meta">Loading…</p>
+
+  <div id="status" class="status">Loading responses…</div>
+  <div id="content" hidden></div>
+
+  <footer>
+    The survey is still open: <a href="../">take it here</a>. Counts update as responses arrive.
+    Free-text answers appear only where the respondent agreed to be quoted anonymously.
+  </footer>
+</main>
+
+<script>
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycbwY7K1HRjcRKdCs00D1IA5BtVZ8ct8Gex_y8r2eR55Wb59t2TKwc36fm7Esv9PoaYZ8/exec";
+
+  // Same option order as the survey. Display labels on the right.
+  const SECTIONS = [
+    { title: "About you", items: [
+      { f: "role", q: "What are you?", opts: [["undergraduate","Undergraduate"],["grad student","Grad student"],["postdoc","Postdoc"],["faculty","Faculty"],["industry","Industry"],["left the field","Left the field"],["other","Other"]] },
+      { f: "area", q: "Your area?", opts: [["Algebra"],["Analysis"],["Geometry and topology"],["PDE and applied"],["Probability and statistics"],["Logic and foundations"],["Combinatorics and number theory"],["Other"]] },
+    ]},
+    { title: "How you use it", items: [
+      { f: "frequency", q: "Do you use AI for math? How often?", opts: [["never","Never"],["occasionally","Occasionally"],["weekly","Weekly"],["basically every day","Basically every day"]] },
+      { f: "hours", q: "Roughly how many hours a week?", opts: [["0","None"],["<1","Under an hour"],["1-5","1 to 5"],["5-15","5 to 15"],["15+","More than 15"]] },
+      { f: "tools", q: "Which one(s)?", multi: true, opts: [["ChatGPT"],["Claude"],["Gemini"],["DeepSeek"],["Lean AI tools"],["coding agents","Coding agents"],["other","Other"]] },
+      { f: "uses", q: "What do you actually use it for?", multi: true, opts: [["finding papers","Finding papers"],["explaining stuff outside my area","Explaining stuff outside my area"],["proof ideas","Proof ideas"],["checking my proofs","Checking my proofs"],["writing proofs","Writing proofs"],["Lean / formalizing","Lean / formalizing"],["code and computation","Code and computation"],["writing papers/grants","Writing papers/grants"],["teaching prep","Teaching prep"],["nothing, I don't use it","Nothing, I don't use it"]] },
+      { f: "real_idea", q: "Has an AI ever given you a real mathematical idea you didn't have?", opts: [["yes","Yes"],["sort of","Sort of"],["no","No"]] },
+      { f: "trust", q: "Do you trust what it gives you?", opts: [["fully","Fully"],["check the structure","I check the structure"],["check everything","I check everything"],["just for ideas","Just for ideas"],["n/a","N/A, I don't use it"]] },
+      { f: "disclose", q: "Do you tell anyone when you use it?", opts: [["yes","Yes"],["sometimes","Sometimes"],["no","No"],["n/a","N/A, I don't use it"]] },
+      { f: "caught_error", q: "Have you caught an AI in a serious mathematical mistake?", opts: [["yes, often","Yes, often"],["yes, occasionally","Yes, occasionally"],["no","No"],["n/a","N/A, I don't use it"]] },
+      { f: "refereeing", q: "Have you refereed or read a paper you suspected was AI-written?", opts: [["yes","Yes"],["maybe","Maybe"],["no","No"],["don't referee","I don't referee"]] },
+    ]},
+    { title: "The big picture", items: [
+      { f: "ns_reaction", q: "OpenAI announced (Sept 8, 2026) that its model solved Navier–Stokes. First reaction?", multi: true, note: "Up to two picks each.", opts: [["excited","Excited"],["skeptical","Skeptical"],["scared for my job","Scared for my job"],["sad","Sad"],["don't care","Don't care"],["other","Other"]] },
+      { f: "believe", q: "Do you believe it?", opts: [["yes","Yes"],["probably","Probably"],["no idea","No idea"],["probably not","Probably not"],["no","No"]] },
+      { f: "proof_no_human", q: "Is a proof no human understands still math?", opts: [["yes","Yes"],["no","No"],["depends","Depends"]] },
+      { f: "fraction_5y", q: "In 5 years, what fraction of new theorems will be proved by AI?", opts: [["<5%","Less than 5%"],["~25%","About 25%"],["~50%","About 50%"],["~75%","About 75%"],["almost all","Almost all"]] },
+      { f: "career_worry", q: "Worried about your career?", opts: [["no","No"],["a little","A little"],["yes","Yes"],["very","Very"]] },
+      { f: "advise_phd", q: "Would you tell a strong undergrad to do a math PhD right now?", opts: [["yes","Yes"],["yes but","Yes, but"],["no","No"]] },
+      { f: "keep_doing", q: "If an AI could prove anything you could state, would you keep doing math?", opts: [["yes","Yes"],["yes but differently","Yes, but differently"],["no","No"]] },
+    ]},
+    { title: "The department", items: [
+      { f: "students_use", q: "Do your students use AI in your courses?", opts: [["widely","Yes, widely"],["some","Some do"],["rarely","Rarely"],["don't know","I don't know"],["don't teach","I don't teach"]] },
+      { f: "course_policy", q: "Do you have an AI policy in your courses?", opts: [["allowed with disclosure","Yes, allowed with disclosure"],["not allowed","Yes, not allowed"],["no policy","No policy"],["don't teach","I don't teach"]] },
+      { f: "dept_should", q: "Should the department do anything about this?", multi: true, opts: [["workshop or seminar","Run a workshop or seminar"],["shared subscription","Provide a shared subscription"],["guidelines for research use","Write guidelines for research use"],["shared policy for courses","Adopt a shared policy for courses"],["nothing","Nothing"],["other","Other"]] },
+      { f: "pays", q: "Do you pay for an AI subscription?", opts: [["out of pocket","Yes, out of pocket"],["grant or department","A grant or the department pays"],["free tier only","Free tier only"],["don't use one","I don't use one"]] },
+    ]},
+  ];
+
+  const TEXTS = [
+    { f: "phd_for", q: "What's a PhD for now?" },
+    { f: "human_research_why", q: "Does human research still matter if AI can do it better? Why or why not?" },
+    { f: "proof_no_human_other", q: "A proof no human understands is math… depends on:" },
+    { f: "advise_phd_other", q: "Do a PhD, yes, but:" },
+    { f: "ns_reaction_other", q: "Other reactions to the Navier–Stokes announcement" },
+    { f: "dept_should_other", q: "Other things the department should do" },
+    { f: "should_have_asked", q: "What should we have asked?" },
+    { f: "anything_else", q: "Anything else?" },
+  ];
+
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  function chart(item, counts, n, num) {
+    const c = counts[item.f] || {};
+    const known = new Set(item.opts.map(o => o[0]));
+    const rows = item.opts.map(o => [o[1] || o[0], c[o[0]] || 0]);
+    Object.keys(c).filter(k => !known.has(k)).sort().forEach(k => rows.push([k, c[k]]));
+    const answered = item.multi ? n : Object.values(c).reduce((a, b) => a + b, 0);
+    const max = Math.max(1, ...rows.map(r => r[1]));
+    let html = `<div class="q"><h3><span class="n">${num}.</span>${esc(item.q)}</h3>`;
+    if (item.note) html += `<p class="note">${esc(item.note)}</p>`;
+    if (item.multi) html += `<p class="note">Check all that apply. Percentages are of all ${n} respondents.</p>`;
+    else if (answered < n) html += `<p class="note">${answered} of ${n} answered.</p>`;
+    html += `<table class="bars">`;
+    for (const [label, v] of rows) {
+      const pct = answered ? Math.round(100 * v / answered) : 0;
+      const w = (100 * v / max).toFixed(1);
+      html += `<tr title="${esc(label)}: ${v} (${pct}%)"><td class="lbl">${esc(label)}</td>` +
+              `<td class="bar"><div class="track"><div class="fill" style="width:${w}%"></div></div></td>` +
+              `<td class="val">${v}${v ? ` <span style="color:var(--muted)">(${pct}%)</span>` : ""}</td></tr>`;
+    }
+    return html + `</table></div>`;
+  }
+
+  function render(d) {
+    const n = d.n;
+    let html = "";
+    let num = 1;
+    for (const s of SECTIONS) {
+      html += `<h2>${esc(s.title)}</h2>`;
+      for (const item of s.items) html += chart(item, d.counts, n, num++);
+    }
+    const anyQuotes = TEXTS.some(t => (d.quotes[t.f] || []).length);
+    html += `<h2>In their words</h2>`;
+    if (!anyQuotes) html += `<p class="empty">No quotable free-text answers yet.</p>`;
+    for (const t of TEXTS) {
+      const qs = d.quotes[t.f] || [];
+      if (!qs.length) continue;
+      html += `<div class="q"><h3>${esc(t.q)}</h3>`;
+      for (const q of qs) html += `<div class="quote"><p>${esc(q.text)}</p>${q.role ? `<div class="who">${esc(q.role)}</div>` : ""}</div>`;
+      html += `</div>`;
+    }
+    document.getElementById("content").innerHTML = html;
+    document.getElementById("content").hidden = false;
+    document.getElementById("status").hidden = true;
+    const when = new Date(d.generated_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    document.getElementById("meta").textContent = `${n} response${n === 1 ? "" : "s"} so far. Updated ${when}.`;
+  }
+
+  fetch(ENDPOINT + "?mode=summary")
+    .then(r => r.json())
+    .then(d => { if (!d.ok) throw new Error(d.error || "bad response"); render(d); })
+    .catch(err => {
+      console.error(err);
+      const s = document.getElementById("status");
+      s.textContent = "Couldn't load the results. Please try again in a minute.";
+      s.className = "status err";
+      document.getElementById("meta").textContent = "";
+    });
+</script>
+</body>
+</html>
