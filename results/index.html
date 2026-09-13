@@ -98,7 +98,7 @@
     ]},
     { title: "How you use it", items: [
       { f: "frequency", q: "Do you use AI for math? How often?", opts: [["never","Never"],["occasionally","Occasionally"],["weekly","Weekly"],["basically every day","Basically every day"]] },
-      { f: "hours", q: "Roughly how many hours a week?", opts: [["0","None"],["<1","Under an hour"],["1-5","1 to 5"],["5-15","5 to 15"],["15+","More than 15"]] },
+      { f: "hours", q: "Roughly how many hours a week?", opts: [["0","None"],["<1","Under an hour"],["1 to 5"],["5 to 15"],["15+","More than 15"]] },
       { f: "tools", q: "Which one(s)?", multi: true, opts: [["ChatGPT"],["Claude"],["Gemini"],["DeepSeek"],["Lean AI tools"],["coding agents","Coding agents"],["other","Other"]] },
       { f: "uses", q: "What do you actually use it for?", multi: true, opts: [["finding papers","Finding papers"],["explaining stuff outside my area","Explaining stuff outside my area"],["proof ideas","Proof ideas"],["checking my proofs","Checking my proofs"],["writing proofs","Writing proofs"],["Lean / formalizing","Lean / formalizing"],["code and computation","Code and computation"],["writing papers/grants","Writing papers/grants"],["teaching prep","Teaching prep"],["nothing, I don't use it","Nothing, I don't use it"]] },
       { f: "real_idea", q: "Has an AI ever given you a real mathematical idea you didn't have?", opts: [["yes","Yes"],["sort of","Sort of"],["no","No"]] },
@@ -137,8 +137,11 @@
 
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+  // Older rows stored "1-5"/"5-15" and Sheets turned them into dates; fold them back.
+  const LEGACY_HOURS = v => v.startsWith("2026-01-05") || v === "1-5" ? "1 to 5" : v.startsWith("2026-05-15") || v === "5-15" ? "5 to 15" : v;
   function chart(item, counts, n, num) {
-    const c = counts[item.f] || {};
+    let c = counts[item.f] || {};
+    if (item.f === "hours") { const m = {}; for (const [k, v] of Object.entries(c)) { const kk = LEGACY_HOURS(k); m[kk] = (m[kk] || 0) + v; } c = m; }
     const known = new Set(item.opts.map(o => o[0]));
     const rows = item.opts.map(o => [o[1] || o[0], c[o[0]] || 0]);
     Object.keys(c).filter(k => !known.has(k)).sort().forEach(k => rows.push([k, c[k]]));

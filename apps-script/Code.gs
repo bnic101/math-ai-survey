@@ -109,10 +109,18 @@ function readRows() {
       var cell = v[i];
       obj[c] = cell instanceof Date ? cell.toISOString() : String(cell === null || cell === undefined ? "" : cell);
     });
+    obj.hours = normalizeHours(obj.hours);
     if (isTestRow(obj)) return;
     rows.push(obj);
   });
   return rows;
+}
+
+// Early responses stored "1-5"/"5-15", which Sheets coerced into dates.
+function normalizeHours(v) {
+  if (v === "1-5" || v.indexOf("2026-01-05") === 0) return "1 to 5";
+  if (v === "5-15" || v.indexOf("2026-05-15") === 0) return "5 to 15";
+  return v;
 }
 
 function isTestRow(r) {
