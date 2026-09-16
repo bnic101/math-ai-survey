@@ -66,6 +66,14 @@
   .quote { border-left: 3px solid var(--series-1); padding: 4px 14px; margin: 10px 0; }
   .quote p { margin: 0; white-space: pre-wrap; }
   .quote .who { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 0 0 8px; }
+  .seg button {
+    font: inherit; font-size: 0.92rem; padding: 7px 14px; cursor: pointer;
+    background: var(--surface); color: var(--ink-2); border: 0; border-right: 1px solid var(--line);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--series-1); color: #fff; }
+  .seg button:focus-visible { outline: 2px solid var(--series-1); outline-offset: -2px; }
   .status { padding: 24px; text-align: center; color: var(--muted); }
   .status.err { color: #d03b3b; }
   footer { color: var(--muted); font-size: 0.85rem; margin-top: 44px; }
@@ -76,6 +84,11 @@
 <main>
   <h1>Mathematicians and AI: results</h1>
   <p class="sub">Aggregate responses to a departmental survey run by Nic Berkopec.</p>
+  <div class="seg" role="group" aria-label="Show responses from" id="seg">
+    <button type="button" data-group="all" aria-pressed="true">Everyone</button>
+    <button type="button" data-group="grad student" aria-pressed="false">Grad students</button>
+    <button type="button" data-group="faculty" aria-pressed="false">Faculty</button>
+  </div>
   <p class="meta" id="meta">Loading…</p>
 
   <div id="status" class="status">Loading responses…</div>
@@ -162,19 +175,33 @@
     return html + `</table></div>`;
   }
 
-  function render(d) {
-    const n = d.n;
+  let DATA = null;
+  let GROUP = "all";
+  const GROUP_LABEL = { "all": "response", "grad student": "grad student response", "faculty": "faculty response" };
+
+  function render(d, group) {
+    const g = group === "all" ? { n: d.n, counts: d.counts } : (d.by_role[group] || { n: 0, counts: {} });
+    const n = g.n;
     let html = "";
+    if (n === 0) {
+      html += `<p class="empty">No ${esc(group)} responses yet.</p>`;
+      document.getElementById("content").innerHTML = html;
+      document.getElementById("content").hidden = false;
+      document.getElementById("status").hidden = true;
+      document.getElementById("meta").textContent = `0 ${GROUP_LABEL[group]}s so far.`;
+      return;
+    }
     let num = 1;
     for (const s of SECTIONS) {
       html += `<h2>${esc(s.title)}</h2>`;
-      for (const item of s.items) html += chart(item, d.counts, n, num++);
+      for (const item of s.items) html += chart(item, g.counts, n, num++);
     }
-    const anyQuotes = TEXTS.some(t => (d.quotes[t.f] || []).length);
+    const pick = qs => group === "all" ? qs : qs.filter(q => q.role === group);
+    const anyQuotes = TEXTS.some(t => pick(d.quotes[t.f] || []).length);
     html += `<h2>In their words</h2>`;
     if (!anyQuotes) html += `<p class="empty">No quotable free-text answers yet.</p>`;
     for (const t of TEXTS) {
-      const qs = d.quotes[t.f] || [];
+      const qs = pick(d.quotes[t.f] || []);
       if (!qs.length) continue;
       html += `<div class="q"><h3>${esc(t.q)}</h3>`;
       for (const q of qs) html += `<div class="quote"><p>${esc(q.text)}</p>${q.role ? `<div class="who">${esc(q.role)}</div>` : ""}</div>`;
@@ -184,12 +211,30 @@
     document.getElementById("content").hidden = false;
     document.getElementById("status").hidden = true;
     const when = new Date(d.generated_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-    document.getElementById("meta").textContent = `${n} response${n === 1 ? "" : "s"} so far. Updated ${when}.`;
+    document.getElementById("meta").textContent = `${n} ${GROUP_LABEL[group]}${n === 1 ? "" : "s"} so far. Updated ${when}.`;
   }
+
+  document.getElementById("seg").addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-group]");
+    if (!b || !DATA) return;
+    GROUP = b.dataset.group;
+    document.querySelectorAll("#seg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    try { history.replaceState(null, "", GROUP === "all" ? location.pathname : "#" + encodeURIComponent(GROUP)); } catch (_) {}
+    render(DATA, GROUP);
+  });
 
   fetch(ENDPOINT + "?mode=summary")
     .then(r => r.json())
-    .then(d => { if (!d.ok) throw new Error(d.error || "bad response"); render(d); })
+    .then(d => {
+      if (!d.ok) throw new Error(d.error || "bad response");
+      DATA = d;
+      const h = decodeURIComponent(location.hash.slice(1));
+      if (["grad student", "faculty"].includes(h)) {
+        GROUP = h;
+        document.querySelectorAll("#seg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.group === h)));
+      }
+      render(d, GROUP);
+    })
     .catch(err => {
       console.error(err);
       const s = document.getElementById("status");

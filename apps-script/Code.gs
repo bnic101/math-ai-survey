@@ -134,24 +134,37 @@ function summary() {
   if (hit) return JSON.parse(hit);
 
   var rows = readRows();
-  var counts = {};
-  COUNT_FIELDS.forEach(function (f) { counts[f] = {}; });
-  MULTI_FIELDS.forEach(function (f) { counts[f] = {}; });
 
-  var quotes = {};
-  TEXT_FIELDS.forEach(function (f) { quotes[f] = []; });
-
-  rows.forEach(function (r) {
+  function emptyCounts() {
+    var c = {};
+    COUNT_FIELDS.forEach(function (f) { c[f] = {}; });
+    MULTI_FIELDS.forEach(function (f) { c[f] = {}; });
+    return c;
+  }
+  function tally(c, r) {
     COUNT_FIELDS.forEach(function (f) {
       var v = (r[f] || "").trim();
-      if (v) counts[f][v] = (counts[f][v] || 0) + 1;
+      if (v) c[f][v] = (c[f][v] || 0) + 1;
     });
     MULTI_FIELDS.forEach(function (f) {
       (r[f] || "").split(";").forEach(function (part) {
         var v = part.trim();
-        if (v) counts[f][v] = (counts[f][v] || 0) + 1;
+        if (v) c[f][v] = (c[f][v] || 0) + 1;
       });
     });
+  }
+
+  var counts = emptyCounts();
+  var byRole = {};          // role -> { n, counts }
+  var quotes = {};
+  TEXT_FIELDS.forEach(function (f) { quotes[f] = []; });
+
+  rows.forEach(function (r) {
+    tally(counts, r);
+    var role = (r.role || "").trim() || "unspecified";
+    if (!byRole[role]) byRole[role] = { n: 0, counts: emptyCounts() };
+    byRole[role].n += 1;
+    tally(byRole[role].counts, r);
     if ((r.quote_ok || "").toLowerCase() === "yes") {
       TEXT_FIELDS.forEach(function (f) {
         var v = (r[f] || "").trim();
@@ -167,6 +180,7 @@ function summary() {
     first_response: rows.length ? rows[0].submitted_at : null,
     last_response: rows.length ? rows[rows.length - 1].submitted_at : null,
     counts: counts,
+    by_role: byRole,
     quotes: quotes
   };
   cache.put("summary", JSON.stringify(out), 120);
